@@ -30,6 +30,17 @@ app.get('/api/persons', (request, response) => {
   response.json(notes)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  const person = notes.find(person => person.id == id)
+
+  if (person) {
+    response.json(person)  
+  } else {
+    response.status(404).end(`Person id: ${id} does not exist.`)
+  }
+})
+
 app.get('/info', (request, response) => {
   const currentTime = new Date()
   const htmlToRespond = `<p>Phonebook has info for ${notes.length} persons</p> <p>${currentTime}</p>`
