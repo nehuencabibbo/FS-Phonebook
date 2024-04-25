@@ -1,0 +1,9 @@
+#Send twice to test adding an already
+#existing name is not possible
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "Nehuen C",
+    "number": "312341"
+}
