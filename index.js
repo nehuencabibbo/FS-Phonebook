@@ -1,8 +1,10 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use(morgan(morgan_logging_function))
 
@@ -80,49 +82,48 @@ function randomIntFromInterval(min, max) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function are_missing_fields(body, response) {
-  if (!body) {
-    response.status(400).json({error: 'Empty response'})
+function getMissingFields(body) {
+  const missingFields = [];
+  if (!body.name) missingFields.push('name');
+  if (!body.number) missingFields.push('number');
 
-    return true
-  }
-
-  if (!body.name && !body.number) {
-    response.status(400).json({error: 'Missing name and number'})
-
-    return true
-  }
-
-  if (!body.name) {
-    response.status(400).json({error: 'Missing name'})
-
-    return true
-  }
-
-  if (!body.number) {
-    response.status(400).json({error: 'Missing number'})
-
-    return true
-  }
-
-  return false
+  return missingFields;
 }
 
-function is_name_already_in_phonebook(name) {
+function isNameAlreadyInPhonebook(name) {
   if (!persons.find(person => person.name === name)) return false
 
   return true
 }
 
-app.post('/api/persons', (request, response) => {
-  const body = request.body
-  
-  if (are_missing_fields(body, response)) return
 
-  if (is_name_already_in_phonebook(body.name)) {
-    return response.status(400).json({error: `${body.name} is already in the phonebook`})
+function isRequestNotValid(body) {
+  // Can this happen at all? 
+  if (!body) return {isNotValid: true, error: 'There was no response body'}
+  
+  let missingFields = getMissingFields(body);
+  if (missingFields.length > 0) {
+    return {
+      isNotValid: true, 
+      error: `Missing fields ${missingFields.join(" and ")}`
+    }
   }
   
+  if (isNameAlreadyInPhonebook(body.name)) {
+    return {isNotValid: true, error: `${body.name} is already in the phonebook`}
+  }
+
+  return {isNotValid: false, error: ``}
+}
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  let requestAssertion = isRequestNotValid(body)
+  if (requestAssertion.isNotValid) {
+    return response.status(400).json({error: `${requestAssertion.error}`})
+  }
+
   const person = {
     name: body.name,
     number: body.number,
