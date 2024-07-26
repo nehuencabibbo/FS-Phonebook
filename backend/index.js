@@ -4,8 +4,9 @@ const cors = require('cors')
 
 const app = express()
 
-app.use(cors())
+app.use(express.static('dist'))
 app.use(express.json())
+app.use(cors())
 app.use(morgan(morgan_logging_function))
 
 function morgan_logging_function(tokens, req, res) {
@@ -18,7 +19,7 @@ function morgan_logging_function(tokens, req, res) {
   ]
 
   if (req.method == "POST") {logging_content.push(tokens['user-data'](req, res))}
-  
+
   return logging_content.join(' ')
 }
 
@@ -157,7 +158,7 @@ app.get('/info', (request, response) => {
   response.send(htmlToRespond)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT | 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
