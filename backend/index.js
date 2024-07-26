@@ -30,8 +30,6 @@ morgan.token('user-data', function (req, res) {
   return JSON.stringify(req.body)
 })
 
-
-
 let persons = [
     { 
       "id": 1,
@@ -70,12 +68,29 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+function removePerson(id, persons) {
+  const indexToRemove = persons.findIndex(person => person.id === id);
+  if (indexToRemove !== -1) {
+    let removedPerson = persons[indexToRemove];
+    persons.splice(indexToRemove, 1);
+
+    return removedPerson;
+  }
+
+  return null;
+}
+
 app.delete('/api/persons/:id', (request, response) => {
-  const id_to_delete = Number(request.params.id)
+  const idToDelete = Number(request.params.id)
 
-  persons = persons.filter(person => person.id !== id_to_delete)
-
-  response.status(204).end()
+  let removedPerson = removePerson(idToDelete, persons)
+  
+  if (removedPerson) {
+    persons = persons.filter(person => person.id !== idToDelete)
+    response.json(removedPerson)
+  } else {
+    response.status(404).end(`Person of id ${idToDelete} doesn't exist`)
+  }
 })
 
 function randomIntFromInterval(min, max) { // min and max included 
