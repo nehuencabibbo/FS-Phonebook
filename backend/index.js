@@ -1,6 +1,12 @@
+const _ = require("dotenv").config()
+
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+
+const personDbService = require("./services/person")
+
+const Person = require("./models/person")
 
 const app = express()
 
@@ -55,7 +61,16 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  personDbService
+    .getAllEntries()
+    .then(entries => {
+      console.log(`Retrived all phonebook entries from the DB`)
+      response.json(entries)
+    })
+    .catch(error => {
+      console.log(`Failed to retrive all phonebook entries from the DB, error: ${error.message}`)
+      response.status(404).end(`${logError}, error: ${error.message}`)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -139,14 +154,13 @@ app.post('/api/persons', (request, response) => {
   if (requestAssertion.isNotValid) {
     return response.status(400).json({error: `${requestAssertion.error}`})
   }
-
+  
   const person = {
     name: body.name,
     number: body.number,
-    id: randomIntFromInterval(0, 100000000)
   }
-  
-  persons = persons.concat(person)
+
+  personDbService.addPerson(person)
 
   response.json(person)
 })
@@ -158,7 +172,7 @@ app.get('/info', (request, response) => {
   response.send(htmlToRespond)
 })
 
-const PORT = process.env.PORT | 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
