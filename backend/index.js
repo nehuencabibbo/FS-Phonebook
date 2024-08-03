@@ -97,16 +97,12 @@ function removePerson(id, persons) {
 }
 
 app.delete('/api/persons/:id', (request, response) => {
-  const idToDelete = Number(request.params.id)
+  let idToRemove = request.params.id
 
-  let removedPerson = removePerson(idToDelete, persons)
-  
-  if (removedPerson) {
-    persons = persons.filter(person => person.id !== idToDelete)
-    response.json(removedPerson)
-  } else {
-    response.status(404).end(`Person of id ${idToDelete} doesn't exist`)
-  }
+  personDbService
+    .deletePerson(idToRemove)
+    .then(removedPerson => response.json(removedPerson))
+    .catch(error => response.status(500).end())
 })
 
 function randomIntFromInterval(min, max) { // min and max included 

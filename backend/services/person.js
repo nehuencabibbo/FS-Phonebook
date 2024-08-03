@@ -1,7 +1,6 @@
 const Person = require(`./../models/person`)
 
 function addPerson({name, number}) {
-    // This is a new person document 
     const person = new Person({
         name: name, 
         number: number
@@ -14,4 +13,8 @@ function getAllEntries() {
     return Person.find({})
 }
 
-module.exports = {addPerson, getAllEntries}
+function deletePerson(id) {
+    return Person.findByIdAndDelete(id)
+}
+
+module.exports = {addPerson, getAllEntries, deletePerson}
