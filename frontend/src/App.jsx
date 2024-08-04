@@ -4,6 +4,8 @@ import ContactData from './components/ContactData'
 import NumberList from './components/NumberList'
 import personService from './services/person'
 import Notification from './components/Notification'
+
+import getAddPersonHandler from "./utils"
 import './index.css'
 
 const Title = ({text}) => (<h1>{text}</h1>)
@@ -25,82 +27,90 @@ const App = () => {
       })
   }, [])
 
-  const addPerson = (event) => {
-    event.preventDefault()
+  // const addPerson = (event) => {
+  //   event.preventDefault()
 
-    const newPerson = {name: newName, number: newNumber}
+  //   const newPerson = {name: newName, number: newNumber}
 
-    const isPersonInPhonebook = (persons, newPerson) => {
-      return persons.some(
-        (person) => 
-          person.name == newPerson.name)
-    }
+  //   const isPersonInPhonebook = (persons, newPerson) => {
+  //     return persons.some(
+  //       (person) => 
+  //         person.name == newPerson.name)
+  //   }
 
-    if (!isPersonInPhonebook(persons, newPerson)) {
-      personService
-        .add(newPerson)
-        .then(returnedPerson => { 
-          setPersons(persons.concat(returnedPerson))
+  //   if (!isPersonInPhonebook(persons, newPerson)) {
+  //     personService
+  //       .add(newPerson)
+  //       .then(returnedPerson => { 
+  //         setPersons(persons.concat(returnedPerson))
 
-          setOperationCompletedMessage(
-            {
-              message: `Added ${returnedPerson.name}`,
-              type: 'success',
-            }
-          )
-          setTimeout(() => {
-            setOperationCompletedMessage(null)
-          }, 5000)
-        })
-    } else {
-      const confirmationText = `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
-      if (confirm(confirmationText)){
-        const newPersonId = persons
-          .find(person => 
-            person.name == newPerson.name)
-          .id
+  //         setOperationCompletedMessage(
+  //           {
+  //             message: `Added ${returnedPerson.name}`,
+  //             type: 'success',
+  //           }
+  //         )
+  //         setTimeout(() => {
+  //           setOperationCompletedMessage(null)
+  //         }, 5000)
+  //       })
+  //   } else {
+  //     const confirmationText = `${newPerson.name} is already added to phonebook, replace the old number with a new one?`
+  //     if (confirm(confirmationText)){
+  //       const newPersonId = persons
+  //         .find(person => 
+  //           person.name == newPerson.name)
+  //         .id
         
-        personService
-          .change(newPersonId, newPerson)
-          .then(personWithNewNumber => {
-            setPersons(persons.map(
-              person =>
-                (person.id == personWithNewNumber.id) 
-                ? personWithNewNumber
-                : person
-              )
-            )
-            setOperationCompletedMessage(
-              {
-                message: `${newPerson.name}'s number was changed to ${newPerson.number}`, 
-                type: 'success',
-              })
-            setTimeout(() => {
-              setOperationCompletedMessage(null)
-              }, 20000)
-            }
-          )
-          .catch(error => {
-            //TODO: Fetchear todo denuevo
-            setOperationCompletedMessage(
-              {
-              message: `Couldn't change ${newPerson.name}'s phone number, person was previously deleted from the server`,
-              type: 'error'
-              }
-            )
-            setTimeout(() => {
-              setOperationCompletedMessage(null)
-            }, 5000)
-          })
+  //       personService
+  //         .change(newPersonId, newPerson)
+  //         .then(personWithNewNumber => {
+  //           setPersons(persons.map(
+  //             person =>
+  //               (person.id == personWithNewNumber.id) 
+  //               ? personWithNewNumber
+  //               : person
+  //             )
+  //           )
+  //           setOperationCompletedMessage(
+  //             {
+  //               message: `${newPerson.name}'s number was changed to ${newPerson.number}`, 
+  //               type: 'success',
+  //             })
+  //           setTimeout(() => {
+  //             setOperationCompletedMessage(null)
+  //             }, 20000)
+  //           }
+  //         )
+  //         .catch(error => {
+  //           //TODO: Fetchear todo denuevo
+  //           setOperationCompletedMessage(
+  //             {
+  //             message: `Couldn't change ${newPerson.name}'s phone number, person was previously deleted from the server`,
+  //             type: 'error'
+  //             }
+  //           )
+  //           setTimeout(() => {
+  //             setOperationCompletedMessage(null)
+  //           }, 5000)
+  //         })
 
-          setPersons(
-              persons
-                  .filter(person => 
-                      newPersonId != person.id))  
+  //         setPersons(
+  //             persons
+  //                 .filter(person => 
+  //                     newPersonId != person.id))  
                   
-      }
-      }
-    }
+  //       }
+  //     }
+  // }
+
+  const addPerson = getAddPersonHandler(
+    persons, 
+    newName,
+    newNumber,
+    setPersons,
+    setOperationCompletedMessage
+  )
 
   return (
     <div>

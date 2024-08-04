@@ -1,7 +1,6 @@
 import axios from "axios"
 const baseUrl = '/api/persons'
 
-
 const add = (newPerson) => {
     return axios
             .post(baseUrl, newPerson)
