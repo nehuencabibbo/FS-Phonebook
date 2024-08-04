@@ -30,7 +30,7 @@ function addPersonAndShowMessage(newPerson, persons, setPersons, setOperationCom
         })
 }
 
-function changePersonNumberAndShowMessage(personWithNewNumber, persons, setPersons) {
+function changePersonNumberAndShowMessage(personWithNewNumber, persons, setPersons, setOperationCompletedMessage) {
     let newPersonsList = persons.map(person => 
         (person.id == personWithNewNumber.id) 
         ? personWithNewNumber
@@ -38,7 +38,7 @@ function changePersonNumberAndShowMessage(personWithNewNumber, persons, setPerso
     )
     setPersons(newPersonsList)
     showOperationCompletedMessageForSomeTime(
-        `${newPerson.name}'s number was changed to ${newPerson.number}`,
+        `${personWithNewNumber.name}'s number was changed to ${personWithNewNumber.number}`,
         `success`,
         200000,
         setOperationCompletedMessage
@@ -49,10 +49,16 @@ function changePersonNumber(newPersonId, newPerson, persons, setPersons, setOper
     personService
         .change(newPersonId, newPerson)
         .then(personWithNewNumber => {
-            changePersonNumberAndShowMessage(personWithNewNumber, persons, setPersons)
+            changePersonNumberAndShowMessage(
+                personWithNewNumber, 
+                persons, 
+                setPersons,
+                setOperationCompletedMessage
+            )
         })
         .catch(error => {
             //TODO: Fetchear todo denuevo
+            console.log(error)
             showOperationCompletedMessageForSomeTime(
                 `Couldn't change ${newPerson.name}'s phone number, person was previously deleted from the server`,
                 `error`,
