@@ -35,7 +35,11 @@ function updateNumber(id, name, number) {
         number: number,
     }
 
-    return Person.findByIdAndUpdate(id, person, {new: true})
+    return Person.findByIdAndUpdate(
+        id, 
+        person, 
+        {new: true, runValidators: true, context: 'query'}
+    )
 }
 
 module.exports = {

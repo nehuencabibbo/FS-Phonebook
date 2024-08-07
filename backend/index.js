@@ -62,21 +62,21 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', async (request, response, next) => {
   try {
-  utils.validateRequest(request.body)
-  
-  const person = {
-    name: request.body.name,
-    number: request.body.number,
-  }
+    utils.validateRequest(request.body)
+    
+    const person = {
+      name: request.body.name,
+      number: request.body.number,
+    }
 
-  let personInPhonebook = await phonebookDbService.isPersonInPhonebook(person.name)
-  if (personInPhonebook.length !== 0) {
-    return response.status(404).send(personInPhonebook)
-  }
+    let personInPhonebook = await phonebookDbService.isPersonInPhonebook(person.name)
+    if (personInPhonebook.length !== 0) {
+      return response.status(404).send(personInPhonebook)
+    }
 
-  let addedPerson = await phonebookDbService.addPerson(person)
-  response.json(addedPerson)
-  
+    let addedPerson = await phonebookDbService.addPerson(person)
+      
+    response.json(addedPerson)
   } 
   catch (error) {
     next(error)
@@ -109,7 +109,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name == "CastError") {
     return response.status(400).send({error: `Malformated id, it must be a 24 character hex string, 12 byte Uint8Array, or an integer`})
   }
-  if (error.name === "InvalidRequest") {
+  if (error.name === "InvalidRequest" || error.name === "ValidationError") {
     return response.status(400).send({error: error.message})
   }
 

@@ -12,8 +12,15 @@ mongoose
     .catch(error => console.log(`Failed to connect to the DB with error: ${error.message}`))
 
 const personSchema = new mongoose.Schema({
-    name: String, 
-    number: String, 
+    name: {
+        type: String,
+        minLength: 3,
+        required: true,
+    },
+    number: {
+        type: String,
+        required: true,
+    }, 
 })
 
 // Setting the toJson property of the schema, every document that has the schema 
