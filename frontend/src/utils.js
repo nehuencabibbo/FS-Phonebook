@@ -28,6 +28,15 @@ function addPersonAndShowMessage(newPerson, persons, setPersons, setOperationCom
                 setOperationCompletedMessage
             )
         })
+        .catch(error => {
+            showOperationCompletedMessageForSomeTime(
+                `${error.response.data.error}`,
+                `error`,
+                5000,
+                setOperationCompletedMessage
+            )
+        })
+
 }
 
 function changePersonNumberAndShowMessage(personWithNewNumber, persons, setPersons, setOperationCompletedMessage) {
@@ -58,9 +67,8 @@ function changePersonNumber(newPersonId, newPerson, persons, setPersons, setOper
         })
         .catch(error => {
             //TODO: Fetchear todo denuevo
-            console.log(error)
             showOperationCompletedMessageForSomeTime(
-                `Couldn't change ${newPerson.name}'s phone number, person was previously deleted from the server`,
+                `${error.response.data.error}`,
                 `error`,
                 5000,
                 setOperationCompletedMessage

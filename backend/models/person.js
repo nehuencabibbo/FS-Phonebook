@@ -1,5 +1,7 @@
 const _ = require("dotenv").config()
 
+const custom_validators = require("./custom_person_validators")
+
 const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
@@ -14,11 +16,12 @@ mongoose
 const personSchema = new mongoose.Schema({
     name: {
         type: String,
-        minLength: 3,
+        minLength: [3, "Name should be at least 3 characters long"],
         required: true,
     },
     number: {
         type: String,
+        validate: custom_validators.number_validators,
         required: true,
     }, 
 })

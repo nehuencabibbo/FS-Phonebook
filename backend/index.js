@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 app.use(morgan.morgan(morgan.morgan_logging_function))
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   let id = request.params.id
   let name = request.body.name
   let number = request.body.number
@@ -71,7 +71,10 @@ app.post('/api/persons', async (request, response, next) => {
 
     let personInPhonebook = await phonebookDbService.isPersonInPhonebook(person.name)
     if (personInPhonebook.length !== 0) {
-      return response.status(404).send(personInPhonebook)
+      const error = new Error(`${person.name} is already in the phonebook`)
+      error.name = "AlreadyInPhonebook"
+
+      throw error
     }
 
     let addedPerson = await phonebookDbService.addPerson(person)
@@ -109,7 +112,11 @@ const errorHandler = (error, request, response, next) => {
   if (error.name == "CastError") {
     return response.status(400).send({error: `Malformated id, it must be a 24 character hex string, 12 byte Uint8Array, or an integer`})
   }
-  if (error.name === "InvalidRequest" || error.name === "ValidationError") {
+  if (
+    error.name === "InvalidRequest" || 
+    error.name === "ValidationError" || 
+    error.name === "AlreadyInPhonebook"
+  ) {
     return response.status(400).send({error: error.message})
   }
 
