@@ -1,11 +1,11 @@
-const _ = require("dotenv").config()
+require('dotenv').config()
 
 const express = require('express')
 const cors = require('cors')
 
 const utils = require('./utils')
 const morgan = require('./middleware/morgan')
-const phonebookDbService = require("./services/phonebook")
+const phonebookDbService = require('./services/phonebook')
 
 const app = express()
 
@@ -25,11 +25,11 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   phonebookDbService
     .getAllEntries()
     .then(entries => {
-      console.log(`Retrived all phonebook entries from the DB`)
+      console.log('Retrived all phonebook entries from the DB')
       response.json(entries)
     })
     .catch(error => next(error))
@@ -57,13 +57,13 @@ app.delete('/api/persons/:id', (request, response, next) => {
   phonebookDbService
     .deletePerson(idToRemove)
     .then(removedPerson => response.json(removedPerson))
-    .catch(error => next(error)) 
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', async (request, response, next) => {
   try {
     utils.validateRequest(request.body)
-    
+
     const person = {
       name: request.body.name,
       number: request.body.number,
@@ -72,19 +72,18 @@ app.post('/api/persons', async (request, response, next) => {
     let personInPhonebook = await phonebookDbService.isPersonInPhonebook(person.name)
     if (personInPhonebook.length !== 0) {
       const error = new Error(`${person.name} is already in the phonebook`)
-      error.name = "AlreadyInPhonebook"
+      error.name = 'AlreadyInPhonebook'
 
       throw error
     }
 
     let addedPerson = await phonebookDbService.addPerson(person)
-      
+
     response.json(addedPerson)
-  } 
+  }
   catch (error) {
     next(error)
   }
-  
 })
 
 app.get('/info', async (request, response, next) => {
@@ -93,7 +92,7 @@ app.get('/info', async (request, response, next) => {
     const currentTime = new Date()
 
     const htmlToRespond = `<p>Phonebook has info for ${amountOfEntriesInPhonebook} persons</p> <p>${currentTime}</p>`
-    
+
     response.send(htmlToRespond)
   }
   catch (error) {
@@ -108,16 +107,16 @@ app.listen(PORT, () => {
 
 const errorHandler = (error, request, response, next) => {
   console.error(error)
-  
-  if (error.name == "CastError") {
-    return response.status(400).send({error: `Malformated id, it must be a 24 character hex string, 12 byte Uint8Array, or an integer`})
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'Malformated id, it must be a 24 character hex string, 12 byte Uint8Array, or an integer' })
   }
   if (
-    error.name === "InvalidRequest" || 
-    error.name === "ValidationError" || 
-    error.name === "AlreadyInPhonebook"
+    error.name === 'InvalidRequest' ||
+    error.name === 'ValidationError' ||
+    error.name === 'AlreadyInPhonebook'
   ) {
-    return response.status(400).send({error: error.message})
+    return response.status(400).send({ error: error.message })
   }
 
   next(error) //response.status(500).end()

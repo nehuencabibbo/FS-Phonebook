@@ -1,23 +1,16 @@
 const mongoose = require('mongoose')
 
-// Note.find({}).then(result => {
-//     result.forEach(note => {
-//       console.log(note)
-//     })
-//     mongoose.connection.close()
-// })
-
 function savePersonToTheDataBase(name, number, url) {
   mongoose.connect(url)
 
   // Schema (interface for the fields) for the Note
   const personSchema = new mongoose.Schema({
-    name: String, 
+    name: String,
     number: String
   })
 
   // Models are fancy constructors compiled from Schema definitions.
-  // An instance of a model is called a document. 
+  // An instance of a model is called a document.
   // OBS: mongoose.model(...) returns a CLASS, this will be the notes (
   // mongoose automatically converts it to plurarl) collection in the db
   const Person = mongoose.model('Person', personSchema)
@@ -30,7 +23,7 @@ function savePersonToTheDataBase(name, number, url) {
 
   person
     .save()
-    .then(response => {
+    .then(() => {
       console.log(`Person ${name} was saved to the database with number ${number}`)
       mongoose.connection.close()
     })
@@ -49,7 +42,7 @@ function displayAllPhonebookEntries(url) {
   Person
     .find({})
     .then(response => {
-      console.log("Phonebook:")
+      console.log('Phonebook:')
       response.forEach(person => console.log(`${person.name} ${person.number}`))
       mongoose.connection.close()
     })

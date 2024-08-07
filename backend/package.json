@@ -8,7 +8,8 @@
     "test": "\"echo \"Error: no test specified\" && exit 1\"",
     "dev": "nodemon index.js",
     "build:ui": "cd ../frontend && npm run build && cp -r dist ../backend",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
   },
   "author": "Nehuén Cabibbo",
   "license": "MIT",
@@ -20,6 +21,10 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@stylistic/eslint-plugin-js": "^2.6.1",
+    "eslint": "^9.8.0",
+    "globals": "^15.9.0",
     "nodemon": "^3.1.0"
   }
 }
